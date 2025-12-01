@@ -44,6 +44,10 @@ Project-specific conventions (how to behave here)
   (e.g., `pkg/` or top-level Go packages). Keep tests adjacent to code
   (e.g., `tests/` or `__tests__` for Node/Python idioms).
 
+- Documentation policy: do not include "Next steps" or TODO-style
+  sections inside repository `.md` files. Use issues, project boards,
+  or PR descriptions to track actionable items instead.
+
 How to propose changes
 - Make small, self-contained PRs. Each change should include:
   - A short `README.md` update explaining the change.

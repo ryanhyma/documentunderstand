@@ -56,18 +56,12 @@ Project conventions
 Data and artifacts
 - The server writes runtime artifacts under `server/data/`. Add this directory to `.gitignore` if you don't want to commit outputs.
 
-- Architecture
+ - Architecture
 
-- A detailed agent architecture and design notes are available in `docs/AGENT_ARCHITECTURE.md`.
-
-Next steps and suggestions
-- Add a small UI in the CRA app to upload PDFs and call `/graphs/run` (I can add this).
-- Add SSE/WebSocket progress updates for long-running graph executions.
-- Add a root-level `dev` script (using `concurrently`) to start both server and web with one command.
-- Add tests and a minimal CI workflow that runs linting and unit tests (no heavy model downloads).
+ - A detailed agent architecture and design notes are available in `docs/AGENT_ARCHITECTURE.md`.
 
 Contact / Iteration
-If you'd like, I can implement any of the Next steps above — tell me which to do next (UI upload + graph flow, progress streaming, concurrent dev script, or CI).
+If you'd like changes or help with the project, open an issue or pull request describing the work you'd like done and I'll assist.
 
 ---
 *Created: November 26, 2025 (updated).*
