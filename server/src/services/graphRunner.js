@@ -1,6 +1,7 @@
 import { resolve } from 'path';
 import { readFile } from 'fs/promises';
 import { convert } from './pdfToImageService.js';
+import { ocrImages } from './ocrService.js';
 
 function resolveParams(params, vars) {
   const out = {};
@@ -28,6 +29,15 @@ async function runGraph(graphPath, inputs = {}) {
       const images = await convert(inputPath, baseOut);
       vars[step.id] = images;
       vars['images'] = images;
+    } else if (step.service === 'pdfToText') {
+      const inputPath = params.inputPath;
+      const baseOut = params.outDir || resolve(__dirname, '..', 'data');
+      const images = await convert(inputPath, baseOut);
+      const ocrResults = await ocrImages(images);
+      vars[step.id] = ocrResults;
+      vars['ocr_results'] = ocrResults;
+      // also provide aggregated text
+      vars['text'] = Object.values(ocrResults).join('\n\n');
     } else {
       throw new Error('Unknown service: ' + step.service);
     }

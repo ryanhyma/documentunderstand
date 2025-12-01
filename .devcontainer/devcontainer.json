@@ -1,0 +1,19 @@
+{
+  "name": "documentunderstand-dev",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "workspace",
+  "workspaceFolder": "/workspaces/documentunderstand",
+  "shutdownAction": "stopCompose",
+  "forwardPorts": [3005, 3000, 5432, 9229],
+  "postCreateCommand": "bash -lc 'cd server && npm install && cd ../web && npm install'",
+  "remoteUser": "vscode",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-docker",
+        "eg2.vscode-npm-script",
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  }
+}

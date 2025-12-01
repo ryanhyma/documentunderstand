@@ -8,8 +8,13 @@ function TaskList({ tasks }) {
             <ul>
                 {tasks.map(task => (
                     <li key={task.id} className={`task-item ${task.status.toLowerCase().replace(' ', '-')}`}>
-                        <span className="task-name">{task.name}</span>
-                        <span className="task-status">{task.status}</span>
+                        <div className="task-main">
+                            <span className="task-name">{task.name}</span>
+                            <span className="task-status">{task.status}</span>
+                        </div>
+                        {task.result && (
+                            <pre className="task-result">{typeof task.result === 'string' ? task.result : JSON.stringify(task.result, null, 2)}</pre>
+                        )}
                     </li>
                 ))}
             </ul>

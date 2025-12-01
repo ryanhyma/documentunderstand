@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "debug": "node --inspect=0.0.0.0:9229 src/index.js"
   },
   "dependencies": {
     "@langchain/core": "^1.1.0",

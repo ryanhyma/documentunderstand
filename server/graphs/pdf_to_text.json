@@ -1,0 +1,14 @@
+{
+  "name": "pdf_to_text",
+  "description": "Convert a PDF into page images and run OCR on each page",
+  "steps": [
+    {
+      "id": "pdfToText",
+      "service": "pdfToText",
+      "params": {
+        "inputPath": "{{inputPath}}",
+        "outDir": "{{outDir}}"
+      }
+    }
+  ]
+}

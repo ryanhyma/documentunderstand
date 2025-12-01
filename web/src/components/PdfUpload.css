@@ -1,0 +1,16 @@
+.pdf-upload {
+  border: 1px solid #ddd;
+  padding: 8px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  width: 260px;
+}
+.pdf-upload h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+}
+.pdf-upload .upload-status {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #444;
+}
