@@ -1,0 +1,55 @@
+.agent-window {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 10px;
+  background-color: #1e1e1e;
+  color: #fff;
+  font-family: monospace;
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+  width: 400px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.agent-header {
+  background-color: #333;
+  padding: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #444;
+}
+
+.agent-name {
+  font-weight: bold;
+}
+
+.agent-status {
+  font-size: 0.8em;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.agent-status.running {
+  background-color: #28a745;
+}
+
+.agent-status.idle {
+  background-color: #6c757d;
+}
+
+.agent-status.error {
+  background-color: #dc3545;
+}
+
+.agent-output {
+  padding: 10px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.log-line {
+  margin-bottom: 4px;
+  word-break: break-all;
+}

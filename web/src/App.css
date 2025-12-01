@@ -1,0 +1,38 @@
+.App {
+  text-align: center;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.App-header {
+  background-color: #282c34;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  flex-shrink: 0;
+}
+
+.App-header h1 {
+  margin: 0;
+  font-size: 1.2em;
+}
+
+.App-body {
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.agents-container {
+  flex-grow: 1;
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  background-color: #f0f2f5;
+  overflow-y: auto;
+}

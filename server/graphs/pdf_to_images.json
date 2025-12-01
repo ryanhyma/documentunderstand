@@ -1,0 +1,14 @@
+{
+  "name": "pdf_to_images",
+  "description": "Convert a PDF into page images",
+  "steps": [
+    {
+      "id": "pdfToImage",
+      "service": "pdfToImage",
+      "params": {
+        "inputPath": "{{inputPath}}",
+        "outDir": "{{outDir}}"
+      }
+    }
+  ]
+}
