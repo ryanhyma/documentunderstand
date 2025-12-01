@@ -40,14 +40,24 @@ A **Strategy** contains the behavior of the agent — it constructs system/user 
 
 ```ts
 class SummarizerStrategy {
+  constructor() {
+    // Strategies are the ONLY place where prompts are loaded
+    this.systemPrompt = require('../../prompts/summarizer-system.txt');
+  }
+
   buildMessages(state) {
     return [
-      { role: "system", content: "Summarize the following text." },
+      { role: "system", content: this.systemPrompt },
       { role: "user", content: state.input }
     ];
   }
 }
 ```
+
+### Prompts Management:
+- All prompts reside in a dedicated `src/prompts/` folder.
+- **Strategies** are the **ONLY** component allowed to load these prompt files.
+- This ensures a single source of truth for agent personas and instructions.
 
 ---
 
@@ -230,11 +240,14 @@ src/
     pure-agent.js
     agent-factory.js
     strategies/
-      summarizer-strategy.js
-      researcher-strategy.js
+      task-strategy.js
+      ocr-strategy.js
     parsers/
-      summarizer-parser.js
-      researcher-parser.js
+      task-parser.js
+      ocr-parser.js
+  prompts/
+    task-system.txt
+    ocr-system.txt
   middleware/
     agent-middleware.js
   graph/
