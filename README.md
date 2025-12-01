@@ -63,5 +63,4 @@ Data and artifacts
 Contact / Iteration
 If you'd like changes or help with the project, open an issue or pull request describing the work you'd like done and I'll assist.
 
----
-*Created: November 26, 2025 (updated).*
+
