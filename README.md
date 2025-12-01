@@ -56,6 +56,10 @@ Project conventions
 Data and artifacts
 - The server writes runtime artifacts under `server/data/`. Add this directory to `.gitignore` if you don't want to commit outputs.
 
+- Architecture
+
+- A detailed agent architecture and design notes are available in `docs/AGENT_ARCHITECTURE.md`.
+
 Next steps and suggestions
 - Add a small UI in the CRA app to upload PDFs and call `/graphs/run` (I can add this).
 - Add SSE/WebSocket progress updates for long-running graph executions.
