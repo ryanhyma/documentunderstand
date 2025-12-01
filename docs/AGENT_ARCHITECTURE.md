@@ -1,74 +1,52 @@
-# 📘 AGENTARCHITECTURE.md
-## **Hybrid Agent Architecture (Strategy + Parser + Middleware + LangGraph)**
+# 📘 ARCHITECTURE.md  
+## **Hybrid Agent Architecture (Strategy + Parser + Middleware + LangGraph + MCP Tools)**
 
-This document outlines the recommended hybrid agent architecture for building a scalable, deterministic, observable multi-agent system using **LangChain**, **LangGraph**, and **LLM-based agents**.
+This document outlines the recommended hybrid agent architecture for building a scalable, deterministic, observable multi-agent system using **LangChain**, **LangGraph**, **MCP (Model Context Protocol)**, and LLM-based agents.
 
-The architecture keeps agents **pure and deterministic**, while centralizing cross-cutting concerns (moderation, trust layers, observability, retries, error shaping) inside a **generic middleware layer**.
+The architecture supports **local execution**, **remote distributed execution**, and **MCP tool exposure**, enabling hybrid multi-agent orchestration.
 
 ---
 
 # 🧱 1. Core Components Overview
 
-The system is composed of five major parts:
+The system is composed of:
 
-1. **Strategy** → Builds messages (behavior constructor)
-2. **Parser** → Extracts structured output from raw LLM response
-3. **PureAgent** → Deterministic agent executor (strategy + llm)
-4. **Middleware** → Shared pipeline (moderation, observability, parsing, trust)
-5. **AgentFactory** → Assembles Strategy + Parser + PureAgent + Middleware
-6. **LangGraph Nodes** → Deterministic state transitions calling agent.run()
+1. **Strategy** → Builds prompts/messages (behavior definition)  
+2. **Parser** → Extracts structured results from raw LLM responses  
+3. **PureAgent** → Deterministic agent executor (strategy + llm.invoke)  
+4. **Middleware** → Moderation, trust layers, observability, retries, parsing  
+5. **AgentFactory** → Assembles Strategy + Parser + PureAgent + Middleware  
+6. **LangGraph Nodes** → Deterministic orchestration of agent workflows  
+7. **MCP Tool Endpoints** → Each agent exposed as a callable tool in the LLM ecosystem  
 
-This separation creates a clean, extensible architecture that scales well as you add agents, tools, and workflows.
+This enables **hybrid orchestration**, where some agents run locally, some remotely, and some as MCP tools — all seamlessly integrated.
 
 ---
 
 # 🧠 2. Strategy (Behavior Builder)
 
-A **Strategy** contains the behavior of the agent — it constructs system/user messages but does *not* execute LLM calls or parse output.
+A Strategy defines the agent’s behavior and constructs system/user prompts.
 
-### Responsibilities:
-- Build messages
-- Encode agent-specific instructions
-
-### Not Responsible For:
-- Moderation
-- Parsing
-- Validation
-- Trust & safety
-- Observability
-- Invoking LLMs
+- Owns prompts (inline or via external `.md` files)  
+- Produces message arrays for the LLM  
+- Deterministic and stateless  
 
 ```ts
 class SummarizerStrategy {
-  constructor() {
-    // Strategies are the ONLY place where prompts are loaded
-    this.systemPrompt = require('../../prompts/summarizer-system.txt');
-  }
-
   buildMessages(state) {
     return [
-      { role: "system", content: this.systemPrompt },
+      { role: "system", content: "Summarize the following text." },
       { role: "user", content: state.input }
     ];
   }
 }
 ```
 
-### Prompts Management:
-- All prompts reside in a dedicated `src/prompts/` folder.
-- **Strategies** are the **ONLY** component allowed to load these prompt files.
-- This ensures a single source of truth for agent personas and instructions.
-
 ---
 
 # 🧩 3. Parser (Output Interpreter)
 
-Each agent defines a **Parser** that translates raw LLM output into structured results.
-
-### Responsibilities:
-- Interpret output
-- Extract fields
-- Normalize agent-specific formats
+Parsers translate raw LLM output into a clean, structured result shape.
 
 ```ts
 class SummarizerParser {
@@ -78,26 +56,13 @@ class SummarizerParser {
 }
 ```
 
-Strategies and Parsers remain **fully separate** to keep concerns clean.
+Parsers **do not** know about strategies, middleware, or LangGraph.
 
 ---
 
-# 🤖 4. PureAgent (Deterministic LLM Executor)
+# 🤖 4. PureAgent (Deterministic Executor)
 
-The **PureAgent** composes Strategy + Parser and performs the minimal possible execution work:
-
-### Responsibilities:
-- Build messages through strategy
-- Call `llm.invoke()`
-- Expose parser for middleware
-
-### Not Responsible For:
-- Moderation
-- Error shaping
-- Logging
-- Observability
-- Retry logic
-- Trust layers
+PureAgent composes Strategy + Parser and executes the LLM in a deterministic, isolated manner.
 
 ```ts
 class PureAgent {
@@ -116,24 +81,20 @@ class PureAgent {
 }
 ```
 
-PureAgent remains simple and deterministic — crucial for LangGraph.
+PureAgent has **no side effects** and relies on middleware for operational logic.
 
 ---
 
-# 🛠️ 5. Middleware (Shared Execution Pipeline)
+# 🛠️ 5. Middleware (Cross-Cutting Pipeline)
 
-The **Middleware** handles *all cross-cutting concerns* and provides a uniform execution pipeline for every agent.
+The Middleware layer standardizes:
 
-### Responsibilities:
-- Moderation
-- Trust & safety layers
-- Observability / tracing
-- Retries & backoff
-- Logging
-- Error shaping
-- Applying Parsing
-
-Middleware calls the agent’s parser **generically**:
+- Moderation  
+- Trust & safety  
+- Logging and tracing  
+- Retry logic  
+- Parsing  
+- Error shaping  
 
 ```ts
 class AgentMiddleware {
@@ -156,100 +117,132 @@ class AgentMiddleware {
 }
 ```
 
-This keeps middleware fully generic across all agents.
+Middleware is **fully generic** and reusable across all agents.
 
 ---
 
-# 🏭 6. AgentFactory (Assemble Strategy + Parser + Agent)
+# 🏭 6. AgentFactory (Local, Remote, or MCP Wiring)
 
-The **factory** chooses the correct Strategy + Parser and assembles a PureAgent wrapped in Middleware.
+AgentFactory constructs agents and enables hybrid execution modes:
+
+- **local** → Run PureAgent + Middleware in-process  
+- **remote** → Call distributed microservices  
+- **mcp** → Register agent as an MCP tool  
 
 ```ts
-function createAgent({ type, llm, middleware }) {
+function createAgent({ type, mode, llm, middleware }) {
   const strategy = strategyFactory(type);
   const parser = parserFactory(type);
 
-  const agent = new PureAgent({ strategy, parser });
+  if (mode === "mcp") return new MCPAgentTool({ strategy, parser });
+  if (mode === "remote") return new RemoteAgentProxy({ strategy, parser });
 
-  return {
-    run: (state) => middleware.run(agent, state)
-  };
+  const agent = new PureAgent({ strategy, parser });
+  return { run: (state) => middleware.run(agent, state) };
 }
 ```
 
-The factory is the single place where components come together.
+---
+
+# 🌐 7. MCP Integration — **Each Agent as an MCP Tool**
+
+Each agent can be exposed as an MCP tool that the LLM can autonomously call.
+
+### Benefits:
+
+- Standardized schemas  
+- Auto-discoverable tools  
+- Agents callable by LLM, LangGraph, or external clients  
+- Cross-language support  
+- Distributed execution  
+
+### Example MCP Tool Registration
+
+```ts
+const summarizerTool = {
+  name: "summarizer",
+  description: "Summarizes text concisely",
+  input_schema: {
+    type: "object",
+    properties: { text: { type: "string" } },
+    required: ["text"]
+  },
+  handler: async ({ text }) => {
+    const agent = createAgent({ type: "summarizer", mode: "local" });
+    return await agent.run({ input: text });
+  }
+};
+```
 
 ---
 
-# 🌐 7. LangGraph Integration
+# 🔌 8. MCP + LangGraph Hybrid Orchestration
 
-LangGraph nodes remain **pure, deterministic functions** that call an assembled agent:
+Example: LangGraph node invoking MCP agent tooling:
 
 ```ts
-workflow.addNode("agentNode", async (state, context) => {
+workflow.addNode("researchOrSummarize", async (state, context) => {
   const agent = createAgent({
     type: state.taskType,
+    mode: "mcp",
     llm: context.llm,
     middleware: context.middleware
   });
 
   const result = await agent.run(state);
-
   return { ...state, result };
 });
 ```
 
 LangGraph handles:
-- State transitions
-- Checkpointing
-- Branching
-- Replayability
-- Node-level tracing
 
-Your middleware handles:
-- moderation
-- observability
-- trust layers
-- parsing
-- retries
+- State transitions  
+- Checkpointing  
+- Deterministic replay  
+- Branch logic  
+
+Agents execute via any supported mode.
 
 ---
 
-# 🎯 8. Why Strategy + Parser Should Remain Separate
+# 🧬 9. Distributed Agent Architecture
 
-Keeping them separate ensures:
+This architecture supports:
 
-### ✔ Clear Separation of Concerns
-- Strategy = Behavior
-- Parser = Output format
+### ✔ Local In-Process Agents  
+### ✔ Remote Microservice Agents  
+### ✔ MCP Tool Agents  
+### ✔ Fully Hybrid Mix
 
-### ✔ Avoids “god-class” anti-pattern
-### ✔ Makes output formats flexible
-### ✔ Allows shared parsers for multiple strategies
-### ✔ Supports centralized observability and trust logic
-### ✔ Keeps deterministic execution for LangGraph
-### ✔ Enables easier unit testing
+All without changing Strategy, Parser, or Middleware.
+
+Only the **execution wrapper** changes — maintaining clean separation.
 
 ---
 
-# 📁 9. Recommended Folder Structure
+# 📁 10. Recommended Folder Structure
 
 ```
 src/
   agents/
     pure-agent.js
+    remote-agent-proxy.js
+    mcp-agent-tool.js
     agent-factory.js
     strategies/
-      task-strategy.js
-      ocr-strategy.js
+      summarizer/
+        prompt.md
+        strategy.js
+      researcher/
+        prompt.md
+        strategy.js
     parsers/
-      task-parser.js
-      ocr-parser.js
-  prompts/
-    task-system.txt
-    ocr-system.txt
+      summarizer-parser.js
+      researcher-parser.js
   middleware/
     agent-middleware.js
+  mcp/
+    register-tools.js
   graph/
     workflow.js
   index.js
@@ -259,9 +252,10 @@ src/
 
 # 🏁 Summary
 
-> **Strategy builds messages.  
-Parser interprets agent output.  
-PureAgent executes deterministically.  
-Middleware applies cross-cutting logic and calls parser.  
-AgentFactory assembles everything.  
-LangGraph nodes stay pure and simple.**
+> **Each agent = Strategy + Parser + Middleware pipeline.  
+Agents may run locally, remotely, or as MCP tools.  
+Strategies build prompts, Parsers shape responses,  
+PureAgents remain deterministic, Middleware handles execution,  
+LangGraph orchestrates workflows,  
+MCP exposes agents to LLMs and external systems.  
+This architecture fully supports hybrid, distributed multi-agent systems.**
