@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:0-18
+FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:1-18
 
 # Install system deps: Poppler (pdftoppm), Tesseract OCR, and PostgreSQL client
 RUN apt-get update \

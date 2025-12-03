@@ -2,15 +2,15 @@
 // Exposes a POST / (mounted at /upload) endpoint that accepts a multipart file
 // and stores it under server/data/pdf/. Returns the server‑side path.
 
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+import express from 'express';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 
 const router = express.Router();
 
 // Configure multer to store uploads in a temporary folder
-const upload = multer({ dest: path.join(__dirname, '..', '..', 'data', 'tmp') });
+const upload = multer({ dest: path.join(process.cwd(), 'server', 'data', 'tmp') });
 
 router.post('/', upload.single('file'), (req, res) => {
     if (!req.file) {
@@ -18,7 +18,7 @@ router.post('/', upload.single('file'), (req, res) => {
     }
 
     // Ensure the final pdf directory exists
-    const pdfDir = path.resolve(__dirname, '..', '..', 'data', 'pdf');
+    const pdfDir = path.resolve(process.cwd(), 'server', 'data', 'pdf');
     if (!fs.existsSync(pdfDir)) {
         fs.mkdirSync(pdfDir, { recursive: true });
     }
@@ -28,8 +28,8 @@ router.post('/', upload.single('file'), (req, res) => {
     fs.renameSync(req.file.path, destPath);
 
     // Respond with the saved path (relative to the project root)
-    const relativePath = path.relative(path.resolve(__dirname, '..', '..'), destPath);
+    const relativePath = path.relative(path.resolve(process.cwd()), destPath);
     res.json({ savedPath: relativePath });
 });
 
-module.exports = router;
+export default router;

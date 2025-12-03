@@ -13,4 +13,4 @@ class PureAgent {
     }
 }
 
-module.exports = PureAgent;
+export default PureAgent;

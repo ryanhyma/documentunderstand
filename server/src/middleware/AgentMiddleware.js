@@ -18,4 +18,4 @@ class AgentMiddleware {
     }
 }
 
-module.exports = AgentMiddleware;
+export default AgentMiddleware;

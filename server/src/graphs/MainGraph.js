@@ -1,5 +1,5 @@
-const { StateGraph, END } = require('@langchain/langgraph');
-const { createTaskAgent, createOCRAgent } = require('../agents/AgentFactory');
+import { StateGraph, END } from '@langchain/langgraph';
+import { createTaskAgent, createOCRAgent } from '../agents/AgentFactory.js';
 
 // Define the state schema
 const graphState = {
@@ -91,4 +91,4 @@ async function createMainGraph({ llm }) {
     return workflow.compile();
 }
 
-module.exports = { createMainGraph };
+export { createMainGraph };

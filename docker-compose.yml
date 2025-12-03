@@ -1,0 +1,44 @@
+
+
+services:
+  orchestrator8b:
+    image: ghcr.io/huggingface/text-generation-inference:latest
+    container_name: orchestrator-8b
+    ports:
+      - "8010:8000"
+    command: >
+      --model nvidia/Orchestrator-8B
+      --port 8000
+      --api-key dummy
+      --max-input-tokens 4096
+      --max-total-tokens 8192
+    volumes:
+      - /c/Users/hymary/repos/documentunderstand/models:/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  qwen2vl2b:
+    image: ghcr.io/huggingface/text-generation-inference:latest
+    container_name: qwen2-vl-2b
+    ports:
+      - "8011:8000"
+    command: >
+      --model Qwen/Qwen2-VL-2B-Instruct
+      --port 8000
+      --api-key dummy
+      --max-input-tokens 4096
+      --max-total-tokens 8192
+    volumes:
+      - /c/Users/hymary/repos/documentunderstand/models:/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

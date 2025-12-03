@@ -17,7 +17,6 @@ async function ocrImage(imagePath) {
     });
   });
 }
-
 export async function ocrImages(images = []) {
   const results = {};
   for (const img of images) {

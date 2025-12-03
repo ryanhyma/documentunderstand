@@ -4,7 +4,7 @@
 // at the last user message and constructs a JSON plan when it sees
 // a string containing 'Process' or a PDF filename.
 
-module.exports = {
+export default {
   invoke: async (messages) => {
     const last = (messages && messages.length) ? messages[messages.length - 1].content : '';
 

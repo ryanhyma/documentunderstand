@@ -1,6 +1,6 @@
-const { spawn } = require('child_process');
-const path = require('path');
-const fs = require('fs/promises');
+import { spawn } from 'child_process';
+import path from 'path';
+import fs from 'fs/promises';
 
 async function ensureDir(dir) {
   await fs.mkdir(dir, { recursive: true });
@@ -43,4 +43,4 @@ async function convert(inputPath, outDir) {
   });
 }
 
-module.exports = { convert };
+export { convert };

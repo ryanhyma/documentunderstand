@@ -47,3 +47,5 @@ async function runGraph(graphPath, inputs = {}) {
 }
 
 export default { runGraph };
+
+export { runGraph };

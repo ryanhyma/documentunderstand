@@ -8,4 +8,4 @@ class OCRParser {
     }
 }
 
-module.exports = OCRParser;
+export default OCRParser;

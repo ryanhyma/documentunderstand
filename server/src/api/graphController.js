@@ -3,9 +3,9 @@
 // Expected body: { graph: 'graph_name', params: { ... } }
 // Looks for a JSON file under server/graphs/<graph_name>.json and runs it.
 
-const express = require('express');
-const path = require('path');
-const { runGraph } = require('../services/graphRunner').default;
+import express from 'express';
+import path from 'path';
+import { runGraph } from '../services/graphRunner.js';
 
 const router = express.Router();
 
@@ -16,7 +16,7 @@ router.post('/run', async (req, res) => {
     }
 
     // Resolve the graph JSON file path
-    const graphFile = path.resolve(__dirname, '..', '..', 'graphs', `${graph}.json`);
+    const graphFile = path.resolve(process.cwd(), 'server', 'graphs', `${graph}.json`);
     try {
         const result = await runGraph(graphFile, params || {});
         res.json({ result });
@@ -26,4 +26,4 @@ router.post('/run', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

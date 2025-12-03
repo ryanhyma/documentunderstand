@@ -1,8 +1,8 @@
 // Controller to run the main agent graph with a mock LLM
-const express = require('express');
-const path = require('path');
-const { createMainGraph } = require('../graphs/MainGraph');
-const llm = require('../services/llm');
+import express from 'express';
+import path from 'path';
+import { createMainGraph } from '../graphs/MainGraph.js';
+import llm from '../services/llm.js';
 
 const router = express.Router();
 
@@ -28,4 +28,4 @@ router.post('/run-main', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

@@ -20,4 +20,4 @@ class TaskParser {
     }
 }
 
-module.exports = TaskParser;
+export default TaskParser;

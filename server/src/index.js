@@ -1,14 +1,17 @@
-const express = require('express');
-const path = require('path');
-const fs = require('fs');
-const { runGraph } = require('./services/graphRunner');
-const uploadController = require('./api/uploadController');
-const graphController = require('./api/graphController');
-const agentController = require('./api/agentController');
+import express from 'express';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { runGraph } from './services/graphRunner.js';
+import uploadController from './api/uploadController.js';
+import graphController from './api/graphController.js';
+import agentController from './api/agentController.js';
 
 const app = express();
 app.use(express.json());
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const dataDir = path.resolve(__dirname, '..', 'data');
 const pdfDir = path.join(dataDir, 'pdf');
 fs.mkdirSync(pdfDir, { recursive: true });

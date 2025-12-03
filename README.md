@@ -63,4 +63,17 @@ Data and artifacts
 Contact / Iteration
 If you'd like changes or help with the project, open an issue or pull request describing the work you'd like done and I'll assist.
 
+Ollama / LLM configuration
+- To use a local Ollama instance instead of the default mock/OpenAI, set environment variables for the server before starting:
+
+```powershell
+cd server
+setx USE_OLLAMA true
+setx OLLAMA_MODEL_TASK "huihui_ai/orchestrator-abliterated:latest"
+setx OLLAMA_MODEL_OCR "qwen2.5vl:latest"
+npm run dev
+```
+
+The server will map agent type `TASK` to the orchestrator model and `OCR` to the OCR model by default. You can also override `OLLAMA_HOST` if your Ollama HTTP API listens on a different host/port.
+
 
